@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 
 import useWebAnimations from '@wellyshen/use-web-animations';
@@ -23,9 +23,7 @@ function App() {
     keyframes: sceneryFrames,
     timing: sceneryTimingBackground
   })
-  if (background1Movement.getAnimation()) {
-    background1Movement.getAnimation().currentTime = background1Movement.getAnimation().effect.getTiming().duration / 2
-  }
+
 
   const background2Movement = useWebAnimations({
     keyframes: sceneryFrames,
@@ -36,9 +34,7 @@ function App() {
     keyframes: sceneryFrames,
     timing: sceneryTimingForeground
   })
-  if (foreground1Movement.getAnimation()) {
-    foreground1Movement.getAnimation().currentTime = foreground1Movement.getAnimation().effect.getTiming().duration / 2
-  }
+
 
   const foreground2Movement = useWebAnimations({
     keyframes: sceneryFrames,
@@ -62,8 +58,8 @@ function App() {
 
   const sceneries = [foreground1Movement, foreground2Movement, background1Movement, background2Movement]
 
-  const adjustBackgroundPlayback = () => {
-    if (redQueen_alice.getAnimation()) {
+  useEffect(() => {
+    const adjustBackgroundPlayback = () => {
       if (redQueen_alice.getAnimation().playbackRate < 0.8) {
         sceneries.forEach(anim => {
           anim.getAnimation().updatePlaybackRate(redQueen_alice.getAnimation().playbackRate / 2 * -1)
@@ -80,27 +76,25 @@ function App() {
         })
       }
     }
-  }
-  adjustBackgroundPlayback()
 
-  setInterval(() => {
-    if (redQueen_alice.getAnimation()) {
+    adjustBackgroundPlayback()
+    background1Movement.getAnimation().currentTime = background1Movement.getAnimation().effect.getTiming().duration / 2
+
+    foreground1Movement.getAnimation().currentTime = foreground1Movement.getAnimation().effect.getTiming().duration / 2
+
+    setInterval(() => {
       if (redQueen_alice.getAnimation().playbackRate > 0.4) {
         redQueen_alice.getAnimation().updatePlaybackRate(redQueen_alice.getAnimation().playbackRate * 0.9)
       }
-    }
-    adjustBackgroundPlayback()
-  }, 3000)
-
-  const goFaster = () => {
-    if(redQueen_alice.getAnimation()) {
+      adjustBackgroundPlayback()
+    }, 3000)
+    const goFaster = () => {
       redQueen_alice.getAnimation().updatePlaybackRate(redQueen_alice.getAnimation().playbackRate * 1.1)
+      adjustBackgroundPlayback()
     }
-  }
-
-  document.addEventListener("click", goFaster);
-  document.addEventListener("touchstart", goFaster);
-  console.log(redQueen_alice.getAnimation())
+    window.addEventListener("click", goFaster);
+    window.addEventListener("touchstart", goFaster);
+  })
 
   return (
     <div>
